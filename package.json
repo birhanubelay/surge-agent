@@ -1,0 +1,16 @@
+{
+  "name": "surge-agent",
+  "private": true,
+  "scripts": {
+    "dev": "concurrently \"npm run dev:server\" \"npm run dev:frontend\"",
+    "dev:server": "cd server && npm run dev",
+    "dev:frontend": "cd frontend && npm run dev",
+    "db:generate": "cd db && npx prisma generate",
+    "db:push": "cd db && npx prisma db push",
+    "db:studio": "cd db && npx prisma studio",
+    "lint": "echo \"Add ESLint/Prettier later\""
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.2"
+  }
+}
