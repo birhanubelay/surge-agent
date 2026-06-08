@@ -6,13 +6,36 @@ datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
+enum UserRole {
+  SUPER_ADMIN
+  BUSINESS_OWNER
+  VIEWER
+}
+model User {
+  id            String    @id @default(cuid())
+  email         String    @unique
+  passwordHash  String
+  firstName     String
+  lastName      String
+  role          UserRole  @default(VIEWER)
+  refreshToken  String?
+  lastLoginAt   DateTime?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
 
+  business      Business?
+  @@index([email])
+}
 model Business {
   id                 String   @id @default(cuid())
+  ownerId            String   @unique
+  owner              User     @relation(fields: [ownerId], references: [id], onDelete: Cascade)
   name               String
   stadiumProximityM Int      @default(500)
   primaryLanguage    String   @default("en")
   supportedLanguages String[]
+  address            String?
+  phone              String?
   createdAt          DateTime @default(now())
   updatedAt          DateTime @updatedAt
 
