@@ -1,23 +1,33 @@
 import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
+import { config } from './config';
+import routes from './routes';
 
 dotenv.config();
 
 const app = express();
-const PORT = process.env.PORT || 4000;
 
-app.use(cors({ origin: process.env.CORS_ORIGIN || 'http://localhost:5173' }));
+app.use(cors({ origin: config.corsOrigin, credentials: true }));
 app.use(express.json());
 
 app.get('/health', (_, res) => {
-  res.json({ 
-    status: 'ok', 
+  res.json({
+    status: 'ok',
+    service: 'SurgeAgent API',
     timestamp: new Date().toISOString(),
-    service: 'SurgeAgent API'
+    env: config.nodeEnv,
   });
 });
 
-app.listen(PORT, () => {
-  console.log(`🚀 Server running on http://localhost:${PORT}`);
+app.use('/api', routes);
+
+app.use((err: any, _req: any, res: any, _next: any) => {
+  console.error('[Express Error]', err);
+  res.status(500).json({ error: 'Internal server error' });
+});
+
+app.listen(config.port, () => {
+  console.log(` Server running on http://localhost:${config.port}`);
+  console.log(` Environment: ${config.nodeEnv}`);
 });
